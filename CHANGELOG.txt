@@ -1,0 +1,27 @@
+Depache RW Editor - changes
+===========================
+
+1.0.0 (2026-10-12) - first release
+  Units
+    - Browser for the units of the four mods, grouped into families (a unit with its upgrade levels, versions and parts), per-mod areas,
+      search, locked-machinery switch, unit pictures made from your own copy.
+    - Stat editor: values in plain words with tooltips, resolved origin (own line or shared template, with the list of units that share it),
+      allowed ranges, Simple / Expand / All values, staged changes with live checks, apply in one go, set one value for many units, family choice,
+      revert (one value, one unit, one mod area, everything), History and Undo.
+    - Income and tech-level values; edits to numbers that other values are calculated from say which values change with them.
+  Start units
+    - Spawn-group builder: up to 8 groups of up to 12 units (40 per team), name, who gets it, default-on, default entries hidden or deleted.
+    - Placement picture with the real size of each unit; drag the units where you want them or let the editor lay them out; overlap warning.
+  Menu options
+    - All 26 options in 4 sections: show, hide, delete, put back (one, a section, all); names and tooltips; numbers for base income and rich start.
+    - Text and numbers are written only on whitelisted lines of the protected files, recorded, verified and undoable.
+  Logs
+    - Game-log analyser: load errors with file, section and key, duplicate keys, unreadable lines, two copies switched on, safe mode, out of memory,
+      crashes; says whose change it is (your edit, made by the editor, shipped, another mod, the game).
+    - Test load: starts the game once, reads its live log, closes it gently, puts preferences.ini back exactly; remembers the last result and
+      lists the changes made since the last clean test.
+    - Editor log and crash reports, readable in the program.
+  Safety
+    - One checked write path with backup, read-back and undo; locked files verified by fingerprint; editor copies only; Workshop, baseline and
+      development folders refused; every action wrapped so the editor never closes on an error.
+    - Multiplayer notice always visible.

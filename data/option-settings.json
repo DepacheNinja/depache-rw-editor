@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "_about": "Whitelist of what the Menu options page may change inside LOCKED files (DESIGN_EDITOR 3, PH-101). Only lines named here are ever touched, each by replacing one existing line (never an insert), and every change is recorded in the copy's settings so it can be undone and so the locked-file check can tell it from tampering. A setting is offered only when its pattern matches exactly once in the shipped text.",
+  "text": {
+    "file": "startingOptions/gameOptionSelector.ini",
+    "nameKey": "@define actionName",
+    "descriptionKey": "description",
+    "maxNameLength": 40,
+    "maxDescriptionLines": 8,
+    "maxDescriptionLineLength": 120
+  },
+  "settings": [
+    {
+      "id": "income.credits",
+      "label": "Base income: credits",
+      "options": ["baseIncome", "incomeMe"],
+      "desc": "The credits every team earns by itself while 'Base Income' (or 'Base Income (human only)') is on. Both options use this one amount: the mod has a single income unit, so the two options differ only in who gets it. The mod's income numbers are 'per second' (a Command Center T3 gives 250).",
+      "unit": "credits per second",
+      "kind": "int",
+      "min": 0,
+      "max": 100000,
+      "warnMax": 5000,
+      "targets": [
+        { "file": "myAssets/ManagerBasic.ini", "section": "core", "key": "generation_resources", "pattern": "credits=(?<v>[0-9]+)" }
+      ]
+    },
+    {
+      "id": "income.rust",
+      "label": "Base income: rust",
+      "options": ["baseIncome", "incomeMe"],
+      "desc": "The rust (the red resource) every team earns by itself while 'Base Income' (or 'Base Income (human only)') is on. Shared by both options, like the credits.",
+      "unit": "rust per second",
+      "kind": "int",
+      "min": 0,
+      "max": 100000,
+      "warnMax": 5000,
+      "targets": [
+        { "file": "myAssets/ManagerBasic.ini", "section": "core", "key": "generation_resources", "pattern": "rust=(?<v>[0-9]+)" }
+      ]
+    },
+    {
+      "id": "richStart.credits",
+      "label": "Rich start: credits multiplier",
+      "options": ["richStart"],
+      "desc": "'Rich start' gives every team its starting resources again, this many times over (credits). The option's own description in the menu is changed to say the same number.",
+      "unit": "times the starting credits",
+      "kind": "int",
+      "min": 0,
+      "max": 1000,
+      "warnMax": 200,
+      "targets": [
+        { "file": "myAssets/ManagerBasic.ini", "section": "hiddenAction_richStart", "key": "addResourcesWithLogic", "pattern": "credits=memory\\.startingRes \\* (?<v>[0-9]+)" },
+        { "file": "startingOptions/gameOptionSelector.ini", "section": "action_richStartOn", "key": "description", "pattern": "acquire (?<v>[0-9]+) times" },
+        { "file": "startingOptions/gameOptionSelector.ini", "section": "action_richStartOn", "key": "description_zh", "pattern": "获得(?<v>[0-9]+)倍" }
+      ]
+    },
+    {
+      "id": "richStart.rust",
+      "label": "Rich start: rust multiplier",
+      "options": ["richStart"],
+      "desc": "'Rich start' also gives rust: the team's starting rust, this many times over.",
+      "unit": "times the starting rust",
+      "kind": "int",
+      "min": 0,
+      "max": 1000,
+      "warnMax": 200,
+      "targets": [
+        { "file": "myAssets/ManagerBasic.ini", "section": "hiddenAction_richStart", "key": "addResourcesWithLogic", "pattern": "rust=memory\\.startingRes \\* (?<v>[0-9]+)" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Depache RW Editor
+Copyright (c) 2026 Depache. All rights reserved.
+
+The program may be downloaded and used free of charge, for personal use with Rusted Warfare mods.
+Redistribution, modification or use of the source code in other projects needs the author's written permission.
+
+The program contains none of the files of Depache's Mod Tribute or of the four mods it brings together; those belong to their authors.

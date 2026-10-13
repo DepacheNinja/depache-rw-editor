@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "about": "Which source mod each unit file belongs to, for the editor's per-mod areas (DESIGN_SPEC 6, DESIGN_EDITOR 5.3). First matching glob wins; a file that matches none is 'main' (the main mod, Major Experimentals). Globs: '**' = any characters, '*' = any characters except '/', case-insensitive, paths relative to the mod root with '/'. Derived 2026-10-12 from the folder layout (src/donors/<fe|moo|vte>, CHANGELOG C-009..C-019) and tools/diff-vs-baseline.ps1 (ini files ADDED outside donors/ = Depache's own additions). Depache-made units inside donors/ (e.g. t3arty..t5arty, CHANGELOG C-018) stay in the donor area they extend.",
+  "defaultArea": "main",
+  "areas": [
+    { "id": "main", "label": "Major Experimentals", "globs": [] },
+    { "id": "fe", "label": "Fabricator Extreme", "globs": ["donors/fe/**"] },
+    { "id": "moo", "label": "Moo's Defence Agency", "globs": ["donors/moo/**"] },
+    { "id": "vte", "label": "Vanilla Turrets Expansion", "globs": ["donors/vte/**"] },
+    { "id": "depache", "label": "Depache additions", "globs": ["ACV/acvMainBldg.ini", "myAssets/extraStartAnchor.ini", "editorGenerated/**"] }
+  ]
+}

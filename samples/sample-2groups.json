@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "spawnGroups": [
+    {
+      "slot": 1,
+      "name": "Hover strike",
+      "mode": "followToggle",
+      "defaultOn": true,
+      "enabled": true,
+      "units": [
+        { "unit": "expHoverTank", "count": 2, "offsets": [ { "x": 300, "y": -60 }, { "x": 300, "y": 10 } ] },
+        { "unit": "Valkyrie", "count": 1, "offsets": [ { "x": 370, "y": -25 } ] }
+      ]
+    },
+    {
+      "slot": 2,
+      "name": "Builders",
+      "mode": "humansOnly",
+      "defaultOn": false,
+      "enabled": true,
+      "units": [
+        { "unit": "hoverBuilder", "count": 1, "offsets": [ { "x": -300, "y": 40 } ] },
+        { "unit": "heliBase", "count": 1, "offsets": [ { "x": -380, "y": -30 } ] }
+      ]
+    }
+  ],
+  "startOptions": {
+    "extraACV": "hidden"
+  }
+}

@@ -1,0 +1,4 @@
+#!/bin/sh
+# git pre-push hook: nothing leaves this machine while a Markdown file or a mod file is tracked.
+# Enable once per clone:  git config core.hooksPath .githooks
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(git rev-parse --show-toplevel)/tools/check-no-md.ps1"

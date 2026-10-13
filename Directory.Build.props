@@ -1,0 +1,16 @@
+<Project>
+  <!-- Shared settings for every RwEditor project (Depache RW Editor, phase E1b-1). -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Company>Depache</Company>
+    <Product>Depache RW Editor</Product>
+    <Authors>Depache</Authors>
+    <Copyright>Depache</Copyright>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,435 @@
+{
+  "schema": 1,
+  "about": "Depache RW Editor stat dictionary (phase E1b-2). A WHITELIST: a key that is not listed here is never editable. Every entry: how the game reads the key (type), where (sections), tooltip texts, hard limits (an edit outside them is refused), soft warn limits (absolute warnMin/warnMax and relative relWarnMin/relWarnMax = multiples of the value before the edit), cross-key rules and the evidence. Limits are in the entry's unit: frames (60 per second) for type time, seconds for type buildTime.",
+  "sources": "Types and defaults: javap -c -p on D:/SteamLibrary/steamapps/common/Rusted Warfare/game-lib.jar (JDK 21.0.10), classes com.corrodinggames.rts.game.units.custom.ag (unit loader), bh (projectile), bn (turret), d.b (price parser) and gameFramework.utility.ab (ini reader: g/b(Integer) = Integer.parseInt, a(Float) = Float.parseFloat, b(Float) = time: 'Ns' = N*60 frames else frames, d(Float) = inverted time: 'Ns' = 1/(N*60) per frame else the number). Load-time checks: knowledge/rw-validation-strings.txt and the javap offsets named per entry. Shipped ranges: rwedit dict-check --mod src (2026-10-12). A hard limit that is NOT a game check is an editor-side bound (verified=false, PLACEHOLDERS PH-076).",
+  "neverEditable": [
+    "@*", "copyFrom", "dont_load", "name", "overrideAndReplace", "id", "tags", "*Tags", "*Tag", "*tags", "image*", "icon*", "*Image", "*image", "sound*", "*Sound",
+    "movementType", "techLevel", "isBuilding", "footprint", "constructionFootprint", "displayFootprint", "class", "radius", "displayRadius",
+    "autoTrigger*", "requireConditional", "isVisible*", "isLocked*", "spawnUnits", "convertTo", "canBuild*", "builtFrom*", "ai_*", "useAs*", "showInEditor",
+    "total_frames", "frame_width", "frame_height", "default_frame", "globalScale", "projectile", "copyFromSection", "deleteSelf", "text*", "description*", "displayText*"
+  ],
+  "rules": [
+    {
+      "id": "limitingRangeVsMaxAttackRange",
+      "severity": "error",
+      "verified": true,
+      "desc": "When every turret of a unit sets limitingRange and the unit sets maxAttackRange, the largest limitingRange must not be below maxAttackRange x globalScale; otherwise the unit fails to load ('limitingRange as been applied to all turrets but is less than maxAttackRange').",
+      "evidence": "units/custom/ag offsets 12619-12996 (javap): local 70 = max over turrets of bn.ab (limitingRange, bn offset 1703, default 99999 = unset), error thrown when all turrets set it, maxAttackRange is set and max < as.i; as.i = maxAttackRange x l.aG (globalScale, ag offsets 1188 and 11539-11572). The editor applies it to every turret_ section (the engine only to turrets with flag bn.B, not traced), i.e. it can refuse slightly more than the game."
+    },
+    {
+      "id": "projectileNeedsDamage",
+      "severity": "error",
+      "verified": true,
+      "desc": "A projectile needs directDamage or areaDamage set ('directDamage or areaDamage must be set').",
+      "evidence": "units/custom/bh offsets 23-67 (javap): RuntimeException when both keys are null. The editor never removes a key, so an edit can only keep this rule true; it is checked anyway."
+    },
+    {
+      "id": "limitingMinRangeBelowLimitingRange",
+      "severity": "warning",
+      "verified": false,
+      "desc": "A turret's limitingMinRange above its limitingRange leaves no distance at which it can fire.",
+      "evidence": "Editor-side sanity check (no load-time check found in bn). PH-076."
+    },
+    {
+      "id": "energyUsageNeedsEnergyMax",
+      "severity": "warning",
+      "verified": false,
+      "desc": "A turret that uses energy on a unit without energy (energyMax 0 or unset) may never fire.",
+      "evidence": "Editor-side sanity check; the firing condition was not traced in the jar. PH-076."
+    }
+  ],
+  "entries": [
+    {
+      "id": "core.price.credits", "key": "price", "field": "credits", "sections": ["core"], "type": "partInt", "tier": "simple", "appliesTo": "both",
+      "label": "Price (credits)", "desc": "Credits paid to build the unit.",
+      "up": "More expensive: fewer can be built; the AI builds it less often.", "down": "Cheaper: easier to mass. 0 makes it free.",
+      "unit": "credits", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/d/b.b (javap offsets 147-176): a bare number or 'credits=N' / 'credits:N', parts split on ',' or '|'; Integer.parseInt (whole numbers only, 'Bad price number ... (Hint: A whole number was expected)'). No range check; the upper bound is an editor bound below the Java int range."
+    },
+    {
+      "id": "core.price.rust", "key": "price", "field": "rust", "sections": ["core"], "type": "partFloat", "tier": "simple", "appliesTo": "both",
+      "label": "Price (rust)", "desc": "Rust Point (the red resource) paid to build the unit, on top of the credits.",
+      "up": "Needs more rust: slower to get with normal income.", "down": "Needs less rust. 0 = credits only.",
+      "unit": "rust", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/d/b.b (javap offsets 402-455): a part named after a mod resource (rust is defined in all-units.template) is Float.parseFloat. Upper bound is an editor bound."
+    },
+    {
+      "id": "core.maxHp", "key": "maxHp", "field": null, "sections": ["core"], "type": "int", "tier": "simple", "appliesTo": "both",
+      "label": "Health", "desc": "Hit points: damage the unit can take before it is destroyed.",
+      "up": "Survives longer (stronger for the same price).", "down": "Dies faster.",
+      "unit": "hit points", "hardMin": 1, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 6345 (javap): ab.g = required Integer.parseInt; no range check in the loader. hardMin 1 (0 or less = dies at once, DESIGN_EDITOR 1.4) and hardMax are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.maxShield", "key": "maxShield", "field": null, "sections": ["core"], "type": "int", "tier": "simple", "appliesTo": "both",
+      "label": "Shield", "desc": "Shield points that absorb damage before health is lost.",
+      "up": "Absorbs more damage.", "down": "Absorbs less. 0 = no shield.",
+      "unit": "shield points", "hardMin": 0, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 6363: ab.b(Integer), default 0, no range check. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.armour", "key": "armour", "field": null, "sections": ["core"], "type": "float", "tier": "simple", "appliesTo": "both",
+      "label": "Armour", "desc": "Flat damage reduction applied to each hit.",
+      "up": "Small hits do little or no damage.", "down": "Takes the full damage of each hit.",
+      "unit": "damage per hit", "hardMin": 0, "hardMax": 1000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag (keyreads ag line 6110): ab.a(Float), no range check. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.selfRegenRate", "key": "selfRegenRate", "field": null, "sections": ["core"], "type": "float", "tier": "simple", "appliesTo": "both",
+      "label": "Self repair", "desc": "Health the unit repairs by itself over time.",
+      "up": "Heals faster between fights.", "down": "Heals slower. 0 = no self repair.",
+      "unit": "health per frame", "hardMin": -100000, "hardMax": 100000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 8087: ab.a(Float), default 0, no range check. Negative values drain health (shipped: dying-unit templates -150 .. -5). Unit (per frame) not traced; bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.buildSpeed", "key": "buildSpeed", "field": null, "sections": ["core"], "type": "buildTime", "tier": "simple", "appliesTo": "both",
+      "label": "Build time", "desc": "How long the unit takes to build. Written as 'Ns' (N seconds) or as progress per frame.",
+      "up": "Takes longer to build.", "down": "Builds faster.",
+      "unit": "seconds", "hardMin": 0.1, "hardMax": 36000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/ag line 5137: ab.d (inverted time, gameFramework/utility/ab offsets 2328-2403): 'Ns' -> 1/(N*60) progress per frame, a plain number = progress per frame. 0s would divide by zero; hardMin 0.1 s and hardMax 10 h are editor bounds."
+    },
+    {
+      "id": "core.generation_resources.credits", "key": "generation_resources", "field": "credits", "sections": ["core"], "type": "partInt", "tier": "simple", "appliesTo": "both",
+      "label": "Credits produced", "desc": "Credits this unit or building earns for its owner by itself, as the mod's descriptions say 'per second' (Generator T1 = 2). Typed on a unit or building that has none, it adds the line so that one earns too (the game reads this line for every unit; confirm in a match).",
+      "up": "Earns more: faster economy, stronger snowballing for whoever owns it.", "down": "Earns less. 0 = nothing. Below 0 the unit COSTS credits every second (Fabricator Alt does this on purpose: it turns credits into rust).",
+      "unit": "credits per second", "hardMin": -1000000, "hardMax": 1000000, "warnMin": null, "warnMax": 5000, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 4255 (javap): generation_resources is read by d/b.a(l, ab, key, section, Z) -> d/b.b(l, String): parts split on ',' or '|', 'name=value' or 'name:value', credits = Integer.parseInt (b.b offsets 147-176). The loader reads the line for every unit, with no building-only branch at these offsets (that a mobile unit really pays out in a match is not yet seen in the game, PH-096). 'Per second' is the mod's own wording (Generator T1 'credits=2' = 'Generates 2 credits per second', generation_delay default 40 at ag offset 4313); the exact tick rate was not traced. The range -1000000 .. 1000000 and the 5000 soft limit are editor bounds (PH-076); negative values are real: fabricatorAltT1..T3 ship credits=-30 / -75 / -180 together with rust=+10 / +25 / +60. Keys the line already holds (rust=, energy=) are kept; a line written with ${...} is read-only."
+    },
+    {
+      "id": "core.generation_resources.rust", "key": "generation_resources", "field": "rust", "sections": ["core"], "type": "partFloat", "tier": "simple", "appliesTo": "both",
+      "label": "Rust produced", "desc": "Rust Point (the red resource) this unit or building produces by itself (Command Center T1 = 15). Typed on a unit that has none, it adds the line (confirm in a match).",
+      "up": "More rust: more rust-priced units and upgrades.", "down": "Less rust. 0 = none. Below 0 it uses rust up every second.",
+      "unit": "rust per second", "hardMin": -1000000, "hardMax": 1000000, "warnMin": null, "warnMax": 5000, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "Same line as core.generation_resources.credits: a part named after a mod resource (rust is defined in all-units.template) is Float.parseFloat (d/b.b offsets 402-455, as for price). Shipped examples: command_center.ini 'credits=60, rust=15', ACV core 'rust=${rustProvided1}' (expression: read-only). The rate wording and bounds are as for the credits part (the survey's largest shipped value is 100000)."
+    },
+    {
+      "id": "core.borrowResourcesWhileBuilt.techLevel", "key": "borrowResourcesWhileBuilt", "field": "techLevel", "sections": ["core"], "type": "partFloat", "tier": "simple", "appliesTo": "both",
+      "label": "Tech level provided", "desc": "How much tech level this building (or unit) adds to its owner while it stands. Tech levels ADD UP across everything the player owns; things unlock when the sum reaches their requirement (2, 4, 8 ... 70 in this mod). Tech Center T1/T2/T3 provide 1/4/15.",
+      "up": "Unlocks higher-tier buildings and upgrades sooner (one building can carry the whole tech tree).", "down": "Unlocks later. 0 = provides none.",
+      "unit": "tech levels", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": 1000, "relWarnMin": 0.1, "relWarnMax": 10, "negate": true,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 4237 (javap): borrowResourcesWhileBuilt is read by d/b.a(l, ab, key, section, Z) -> d/b.b (price-format parts, non-credits = Float.parseFloat). The mod stores a PROVIDED amount as a negative borrow: tech_center.ini 'borrowResourcesWhileBuilt: techLevel = ${-1*techT1ProvideTechLevel}', neutralTechCenter 'techLevel = -3*...', 'techLevel = -500' (so the editor shows N and writes -N; negate=true). That the engine adds a negative borrow to the player's pool is the mod author's design (tech requirements 2..70 in all-units.template, isLockedAlt2Message 'Tech level requirement'); not traced in the jar. NOT the same key as [core] techLevel (the unit's own 1..3 class, ag offset 4112, never editable). hardMax 100000 and the 1000 soft limit are editor bounds (PH-076)."
+    },
+    {
+      "id": "movement.moveSpeed", "key": "moveSpeed", "field": null, "sections": ["movement"], "type": "float", "tier": "simple", "appliesTo": "units",
+      "label": "Speed", "desc": "Top movement speed.",
+      "up": "Moves faster.", "down": "Moves slower. 0 = cannot move.",
+      "unit": "pixels per frame", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": 100, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 7808: ab.a(Float), no range check. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "attack.maxAttackRange", "key": "maxAttackRange", "field": null, "sections": ["attack"], "type": "float", "tier": "simple", "appliesTo": "both",
+      "label": "Attack range", "desc": "Distance at which the unit starts to attack.",
+      "up": "Attacks from further away.", "down": "Must get closer to attack.",
+      "unit": "pixels", "hardMin": -1000, "hardMax": 1000000, "warnMin": 0, "warnMax": 20000, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["limitingRangeVsMaxAttackRange"], "verified": false,
+      "evidence": "units/custom/ag offsets 11539-11572: ab.a(Float), multiplied by globalScale; no range check. Negative values are shipped on fake bodies that never attack (orbitalGunFakeBody -40, offSatFakeBody -50). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.directDamage", "key": "directDamage", "field": null, "sections": ["projectile_*"], "type": "int", "tier": "simple", "appliesTo": "both",
+      "label": "Direct damage", "desc": "Damage dealt to the unit that is hit.",
+      "up": "Each hit hurts more.", "down": "Each hit hurts less.",
+      "unit": "damage", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["projectileNeedsDamage"], "verified": false,
+      "evidence": "units/custom/bh offsets 20 and 83 (javap): ab.b(Integer) (whole numbers only); 'directDamage or areaDamage must be set'. Negative values are allowed by the parser (warned: they heal). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.areaDamage", "key": "areaDamage", "field": null, "sections": ["projectile_*"], "type": "int", "tier": "simple", "appliesTo": "both",
+      "label": "Area damage", "desc": "Damage dealt to every unit inside the blast radius.",
+      "up": "Blasts hurt more.", "down": "Blasts hurt less.",
+      "unit": "damage", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["projectileNeedsDamage"], "verified": false,
+      "evidence": "units/custom/bh offsets 26 and 93: ab.b(Integer). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.delay", "key": "delay", "field": null, "sections": ["turret_*"], "type": "time", "tier": "simple", "appliesTo": "both",
+      "label": "Reload time", "desc": "Time between two shots of this turret (frames, or 'Ns' for seconds).",
+      "up": "Fires less often.", "down": "Fires more often.",
+      "unit": "frames", "hardMin": 1, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false, "shippedOutsideHard": "hades (experimental_groundeffect_vehicles/groundeffect_bomber/groundeffect_bomber.ini [turret_1], copied to turret_2..5) ships delay 0; DESIGN_EDITOR 1.4 refuses 0 (fires every frame) on purpose: the shipped value stays, an edit must pick 1 frame or more.",
+      "evidence": "units/custom/bn line 729: ab.b(Float) = time ('Ns' or frames). hardMin 1 frame (0 = fires every frame, DESIGN_EDITOR 1.4) and hardMax 1 hour are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.shieldRegen", "key": "shieldRegen", "field": null, "sections": ["core"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Shield recharge", "desc": "How fast the shield recharges.",
+      "up": "Shield comes back faster.", "down": "Shield comes back slower.",
+      "unit": "shield per frame", "hardMin": -1000000, "hardMax": 1000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 6082: ab.a(Float), default 0.25. Negative values drain the shield (shipped: -425 .. -6). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.energyMax", "key": "energyMax", "field": null, "sections": ["core"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Energy capacity", "desc": "Energy the unit can store (used by abilities and energy weapons).",
+      "up": "More stored energy for abilities.", "down": "Less stored energy.",
+      "unit": "energy", "hardMin": 0, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["energyUsageNeedsEnergyMax"], "verified": false,
+      "evidence": "units/custom/ag line 6129: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.energyRegen", "key": "energyRegen", "field": null, "sections": ["core"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Energy recharge", "desc": "Energy regained over time.",
+      "up": "Abilities are ready sooner.", "down": "Abilities recharge slower.",
+      "unit": "energy per frame", "hardMin": -1000000, "hardMax": 1000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 6147: ab.a(Float). Negative values drain energy (shipped: -100 .. -0.001). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.nanoRange", "key": "nanoRange", "field": null, "sections": ["core"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Build/repair range", "desc": "Distance at which a builder can build or repair.",
+      "up": "Builds and repairs from further away.", "down": "Must get closer to build or repair.",
+      "unit": "pixels", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 6611: ab.b(Integer). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.nanoBuildSpeed", "key": "nanoBuildSpeed", "field": null, "sections": ["core"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Build power", "desc": "How fast this builder builds other units (multiplier).",
+      "up": "Builds faster.", "down": "Builds slower.",
+      "unit": "multiplier", "hardMin": 0, "hardMax": 10000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 6756: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.nanoFactorySpeed", "key": "nanoFactorySpeed", "field": null, "sections": ["core"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Factory speed", "desc": "How fast this factory produces units (multiplier).",
+      "up": "Produces faster.", "down": "Produces slower.",
+      "unit": "multiplier", "hardMin": 0, "hardMax": 10000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 6766: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.mass", "key": "mass", "field": null, "sections": ["core"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Mass", "desc": "Weight used when units push each other.",
+      "up": "Harder to push around.", "down": "Easier to push around.",
+      "unit": "mass", "hardMin": 1, "hardMax": 2000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 5041: ab.g = required Integer.parseInt (shipped up to 1000000000 = practically immovable). hardMax stays below the Java int range. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.fogOfWarSightRange", "key": "fogOfWarSightRange", "field": null, "sections": ["core"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Sight range", "desc": "How far the unit sees through the fog of war.",
+      "up": "Sees further.", "down": "Sees less.",
+      "unit": "tiles", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 6968: ab.b(Integer), default 15. Unit 'tiles' inferred from the default; bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.generation_credits", "key": "generation_credits", "field": null, "sections": ["core"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Extra income (credits)", "desc": "A second, separate way to give credits every income tick: it is added to 'Credits produced' (generation_resources). Most units use 'Credits produced' instead.",
+      "up": "More income.", "down": "Less income. 0 = none.",
+      "unit": "credits per tick", "hardMin": 0, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 4269: ab.b(Integer), default 0, added to generation_resources. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "core.generation_delay", "key": "generation_delay", "field": null, "sections": ["core"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Income interval", "desc": "Frames between two income ticks.",
+      "up": "Income arrives less often.", "down": "Income arrives more often.",
+      "unit": "frames", "hardMin": 1, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag offset 4313: ab.b(Integer), default 40; the loader refuses < 0 ('generation_delay cannot be < 0'). hardMin 1 (0 is special-cased at offset 4335, not traced) and hardMax are editor bounds (PH-076)."
+    },
+    {
+      "id": "movement.moveAccelerationSpeed", "key": "moveAccelerationSpeed", "field": null, "sections": ["movement"], "type": "float", "tier": "expand", "appliesTo": "units",
+      "label": "Acceleration", "desc": "How quickly the unit reaches top speed.",
+      "up": "Gets going faster.", "down": "Slow to start.",
+      "unit": "speed per frame", "hardMin": 0, "hardMax": 10000, "warnMin": null, "warnMax": 100, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 7820: ab.a(Float) (shipped up to 1000 on support-ability aircraft = instant). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "movement.moveDecelerationSpeed", "key": "moveDecelerationSpeed", "field": null, "sections": ["movement"], "type": "float", "tier": "expand", "appliesTo": "units",
+      "label": "Braking", "desc": "How quickly the unit stops.",
+      "up": "Stops sooner.", "down": "Slides further before stopping.",
+      "unit": "speed per frame", "hardMin": 0, "hardMax": 10000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 7832: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "movement.reverseSpeedPercentage", "key": "reverseSpeedPercentage", "field": null, "sections": ["movement"], "type": "float", "tier": "expand", "appliesTo": "units",
+      "label": "Reverse speed", "desc": "Speed when driving backwards, as a fraction of top speed (0.6 = 60 %).",
+      "up": "Backs off faster.", "down": "Backs off slower.",
+      "unit": "fraction of top speed", "hardMin": 0, "hardMax": 1, "warnMin": null, "warnMax": null, "relWarnMin": null, "relWarnMax": null,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 7908: ab.a(Float), default 0.6. hardMax 1 (= forward speed) is an editor bound (PH-076)."
+    },
+    {
+      "id": "attack.shootDelay", "key": "shootDelay", "field": null, "sections": ["attack"], "type": "time", "tier": "expand", "appliesTo": "both",
+      "label": "Attack delay", "desc": "Unit-wide delay between attacks (frames, or 'Ns'); turrets may set their own reload time.",
+      "up": "Attacks less often.", "down": "Attacks more often.",
+      "unit": "frames", "hardMin": 1, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 8238: ab.b(Float) time, default 50 frames. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "attack.turretTurnSpeed", "key": "turretTurnSpeed", "field": null, "sections": ["attack"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Turret turn speed", "desc": "How fast the unit's turrets rotate (default for all turrets).",
+      "up": "Turrets aim faster.", "down": "Turrets aim slower.",
+      "unit": "degrees per frame", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": 360, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 8108: ab.a(Float), default 8. Unit inferred; bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "attack.aimOffsetSpread", "key": "aimOffsetSpread", "field": null, "sections": ["attack"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Aim spread", "desc": "Random aim error of the unit's attacks.",
+      "up": "Less accurate.", "down": "More accurate.",
+      "unit": "spread", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/ag line 8229: ab.a(Float), default 0.6. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.warmup", "key": "warmup", "field": null, "sections": ["turret_*"], "type": "time", "tier": "expand", "appliesTo": "both",
+      "label": "Warm-up time", "desc": "Time the turret charges before the first shot (frames, or 'Ns').",
+      "up": "Slower first shot.", "down": "Faster first shot.",
+      "unit": "frames", "hardMin": 0, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bn line 750: ab.b(Float) time. Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.turnSpeed", "key": "turnSpeed", "field": null, "sections": ["turret_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Turret turn speed", "desc": "How fast this turret rotates.",
+      "up": "Aims faster.", "down": "Aims slower.",
+      "unit": "degrees per frame", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": 360, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bn line 1275: ab.a(Float) (shipped up to 1000 = turns at once). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.limitingRange", "key": "limitingRange", "field": null, "sections": ["turret_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Turret max range", "desc": "Furthest distance this turret may fire at.",
+      "up": "The turret reaches further.", "down": "The turret reaches less far.",
+      "unit": "pixels", "hardMin": 0, "hardMax": 10000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["limitingRangeVsMaxAttackRange", "limitingMinRangeBelowLimitingRange"], "verified": false,
+      "evidence": "units/custom/bn offset 1703: ab.a(Float), default 99999 (= unset, ag offset 12749). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.limitingMinRange", "key": "limitingMinRange", "field": null, "sections": ["turret_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Turret min range", "desc": "Closest distance this turret may fire at (artillery dead zone).",
+      "up": "Larger dead zone near the unit.", "down": "Can fire closer.",
+      "unit": "pixels", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["limitingMinRangeBelowLimitingRange"], "verified": false,
+      "evidence": "units/custom/bn offset 1747: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.energyUsage", "key": "energyUsage", "field": null, "sections": ["turret_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Energy per shot", "desc": "Energy this turret uses for each shot.",
+      "up": "Runs out of energy sooner.", "down": "Fires longer on its energy. 0 = free.",
+      "unit": "energy", "hardMin": -1000000, "hardMax": 100000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": ["energyUsageNeedsEnergyMax"], "verified": false,
+      "evidence": "units/custom/bn line 828: ab.a(Float). Negative values give energy (shipped: hero torpedo turrets -1). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "turret.aimOffsetSpread", "key": "aimOffsetSpread", "field": null, "sections": ["turret_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Turret aim spread", "desc": "Random aim error of this turret.",
+      "up": "Less accurate.", "down": "More accurate.",
+      "unit": "spread", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bn line 1405: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.areaRadius", "key": "areaRadius", "field": null, "sections": ["projectile_*"], "type": "int", "tier": "expand", "appliesTo": "both",
+      "label": "Blast radius", "desc": "Radius in which area damage is dealt.",
+      "up": "Hits more units per shot (and costs more CPU).", "down": "Hits fewer units.",
+      "unit": "pixels", "hardMin": 0, "hardMax": 2000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh line 70: ab.b(Integer). hardMax is an editor bound against CPU load (DESIGN_EDITOR 1.4; PH-076)."
+    },
+    {
+      "id": "projectile.speed", "key": "speed", "field": null, "sections": ["projectile_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Projectile speed", "desc": "How fast the projectile flies.",
+      "up": "Reaches the target sooner; harder to dodge.", "down": "Slower shots; moving targets can dodge.",
+      "unit": "pixels per frame", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh line 246: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.life", "key": "life", "field": null, "sections": ["projectile_*"], "type": "time", "tier": "expand", "appliesTo": "both",
+      "label": "Projectile lifetime", "desc": "How long the projectile exists before it disappears (frames, or 'Ns').",
+      "up": "Flies further before vanishing (very long lives with slow shots can pile up).", "down": "Vanishes sooner (may fall short).",
+      "unit": "frames", "hardMin": 0, "hardMax": 216000, "warnMin": null, "warnMax": 3600, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh offset 460: ab.h = required time; 0 is shipped on fake / notify projectiles that vanish at once. warnMax 1 minute and hardMax 1 hour are an editor bound (runaway projectiles, crashes.txt OutOfMemoryError 2025-09-25; DESIGN_EDITOR 1.4; PH-076)."
+    },
+    {
+      "id": "projectile.deflectionPower", "key": "deflectionPower", "field": null, "sections": ["projectile_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Deflection power", "desc": "How hard this projectile is to deflect by shields that deflect shots.",
+      "up": "Harder to deflect.", "down": "Easier to deflect.",
+      "unit": "power", "hardMin": -1, "hardMax": 1000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh line 190: ab.a(Float); all-units.template sets -1 (shipped default). Meaning inferred from the name; bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.armourIgnoreAmount", "key": "armourIgnoreAmount", "field": null, "sections": ["projectile_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Armour piercing", "desc": "Armour of the target this projectile ignores.",
+      "up": "Pierces more armour.", "down": "Pierces less armour.",
+      "unit": "armour points", "hardMin": -1000000, "hardMax": 1000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh line 1203: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.targetGroundSpread", "key": "targetGroundSpread", "field": null, "sections": ["projectile_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Ground spread", "desc": "Random spread of shots fired at the ground.",
+      "up": "Shots scatter more.", "down": "Shots land closer together.",
+      "unit": "pixels", "hardMin": 0, "hardMax": 10000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh line 1103: ab.a(Float). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "projectile.turnSpeed", "key": "turnSpeed", "field": null, "sections": ["projectile_*"], "type": "float", "tier": "expand", "appliesTo": "both",
+      "label": "Homing turn speed", "desc": "How sharply a guided projectile can turn toward its target.",
+      "up": "Follows targets better.", "down": "Misses moving targets more.",
+      "unit": "degrees per frame", "hardMin": 0, "hardMax": 100000, "warnMin": null, "warnMax": 360, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "units/custom/bh offset 1496: ab.a(Float) (shipped up to 9999 = no turning limit). Bounds are editor bounds (PH-076)."
+    },
+    {
+      "id": "action.price.credits", "key": "price", "field": "credits", "sections": ["action_*"], "type": "partInt", "tier": "expand", "appliesTo": "both",
+      "label": "Action price (credits)", "desc": "Credits an action (an upgrade or ability button) costs.",
+      "up": "The action costs more.", "down": "The action costs less. 0 = free.",
+      "unit": "credits", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/ag offsets 288 / 1455 of the action reader: '<prefix>price' through units/custom/d/b (same format as the unit price). Bounds are editor bounds."
+    },
+    {
+      "id": "action.price.rust", "key": "price", "field": "rust", "sections": ["action_*"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Action price (rust)", "desc": "Rust an action costs.",
+      "up": "The action needs more rust.", "down": "The action needs less rust.",
+      "unit": "rust", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "Same parser as action.price.credits; rust is a mod resource (Float.parseFloat). Bounds are editor bounds."
+    },
+    {
+      "id": "action.buildSpeed", "key": "buildSpeed", "field": null, "sections": ["action_*"], "type": "buildTime", "tier": "expand", "appliesTo": "both",
+      "label": "Action time", "desc": "How long an action (for example an upgrade) takes. 'Ns' = N seconds.",
+      "up": "The action takes longer.", "down": "The action finishes sooner.",
+      "unit": "seconds", "hardMin": 0, "hardMax": 36000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/ag action reader offset 3386: '<prefix>buildSpeed' through ab.d (inverted time). '0s' (very common on info / switch actions) = 1/(0*60) progress per frame = done at once (inferred from ab.d, PH-077); a plain 0 is read-only. Bounds are editor bounds."
+    },
+    {
+      "id": "action.addResources.credits", "key": "addResources", "field": "credits", "sections": ["action_*", "hiddenAction_*"], "type": "partInt", "tier": "expand", "appliesTo": "both",
+      "label": "Gives credits", "desc": "Credits an action adds (negative = takes).",
+      "up": "The action gives more.", "down": "The action gives less (negative takes credits).",
+      "unit": "credits", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "units/custom/ag action reader offsets 667-677: '<prefix>addResources' through units/custom/d/b (price format). Bounds are editor bounds."
+    },
+    {
+      "id": "action.addResources.rust", "key": "addResources", "field": "rust", "sections": ["action_*", "hiddenAction_*"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Gives rust", "desc": "Rust an action adds (negative = takes).",
+      "up": "The action gives more rust.", "down": "The action gives less rust.",
+      "unit": "rust", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": true,
+      "evidence": "Same parser as action.addResources.credits. Bounds are editor bounds."
+    }
+  ]
+}

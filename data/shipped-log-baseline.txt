@@ -1,0 +1,6 @@
+# Notes the game writes for the SHIPPED mod in a clean load (made by 'rwedit log-baseline').
+# Keys are code|first line with the mod folder, numbers and slashes made neutral. Regenerate when the mod changes.
+UNEXPECTED_FORMAT|MOD/mod-info.txt: Unexpected format on line:N: 'Depache's Mod Tribute by Depache / Depache Products - four mods I love equally, built as a collaboration and credited to their authors. I do not take credit for their work;
+UNEXPECTED_FORMAT|MOD/mod-info.txt: Unexpected format on line:N: 'The whole collaboration works together, campaign missions included, and everything is scaled together (prices, health, damage, range, tech tiers) so all added content sits 
+UNEXPECTED_FORMAT|MOD/mod-info.txt: Unexpected format on line:N: 'Where permission is pending, anything will be adjusted or removed on request.' in ini file
+UNEXPECTED_FORMAT|MOD/myAssets/baseTorpedo.ini: Unexpected format on line:N: 'template_torpedoTurret' in ini file

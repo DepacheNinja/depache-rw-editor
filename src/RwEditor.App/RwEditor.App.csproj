@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The Windows app (phase E2): WinForms shell only; every rule and file operation lives in RwEditor.Core. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>RwEditor.App</RootNamespace>
+    <AssemblyName>DepacheRwEditor</AssemblyName>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+    <Title>Depache's Mod Tribute Editor</Title>
+    <AppIconFile>$(MSBuildThisFileDirectory)..\..\assets\depache-rw-editor.ico</AppIconFile>
+  </PropertyGroup>
+  <!-- The icon is generated from the mod thumbnail by this app itself (DepacheRwEditor.exe make-icon <jpg> <ico>) and committed under assets\;
+       the conditions only let the very first build (before the icon exists) succeed. -->
+  <PropertyGroup Condition="Exists('$(AppIconFile)')">
+    <ApplicationIcon>$(AppIconFile)</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(AppIconFile)')">
+    <EmbeddedResource Include="$(AppIconFile)" Link="Assets\depache-rw-editor.ico" LogicalName="RwEditor.App.depache-rw-editor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RwEditor.Core\RwEditor.Core.csproj" />
+  </ItemGroup>
+</Project>

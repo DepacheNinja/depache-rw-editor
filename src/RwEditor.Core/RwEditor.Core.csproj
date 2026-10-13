@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- All editor logic, no UI. net10.0 (not net10.0-windows) so the later WinForms app (net10.0-windows) and the CLI can both reference it. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>RwEditor.Core</RootNamespace>
+    <AssemblyName>RwEditor.Core</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="RwEditor.Tests" />
+  </ItemGroup>
+  <!-- Editor data, embedded so the exe is self-contained (engine key names, mod-area folder names, the menu-option whitelist and the shipped-mod log baseline; no mod content). Source: ..\..\data\ -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\data\stat-dictionary.json" Link="Data\stat-dictionary.json" LogicalName="RwEditor.Data.stat-dictionary.json" />
+    <EmbeddedResource Include="..\..\data\shipped-log-baseline.txt" Link="Data\shipped-log-baseline.txt" LogicalName="RwEditor.Data.shipped-log-baseline.txt" />
+    <EmbeddedResource Include="..\..\data\option-settings.json" Link="Data\option-settings.json" LogicalName="RwEditor.Data.option-settings.json" />
+    <EmbeddedResource Include="..\..\data\mod-areas.json" Link="Data\mod-areas.json" LogicalName="RwEditor.Data.mod-areas.json" />
+  </ItemGroup>
+</Project>
