@@ -12,6 +12,32 @@ Thank you for downloading this and taking the time to enjoy my work ^_^
 
 *Made by Depache.*
 
+**You do not need this program to play the mod.** It is an extra tool: to have more fun with Depache's Mod Tribute, or to tweak the
+setup further to your own taste. Everything in the mod works without it.
+
+Is it safe?
+-----------
+
+It was written to be as safe and as clear as possible, and you do not have to take anyone's word for it: everything below can be checked.
+
+* **It changes only your own copy.** The editor makes a separate copy of the mod for you and only that copy is ever changed. The Steam Workshop
+  mod is never touched (the editor refuses to write into Workshop folders). Before every change it saves a backup, and *History > Undo* puts it back exactly.
+* **It makes no network connections.** The source code contains no networking at all (no ``System.Net``, no web client, no sockets). It has no installer,
+  no updater and no hidden parts, and it needs no administrator rights. The only other programs it ever starts are Windows Explorer (to open a folder you
+  asked for) and the game's own Java (for *Test load*, which you start yourself).
+* **The full source code is here.** Read it, build it yourself with the commands below, and compare. The SHA-256 of each release download is written on its
+  release page. To check a download in PowerShell: ``Get-FileHash .\DepacheRwEditor-1.0.0.zip -Algorithm SHA256``
+* **It is not code-signed.** Windows may show an "unknown publisher" warning on first run (see *How to use it*). That is why the source is open.
+* **The game's own settings are not changed** (``preferences.ini`` is only read, and put back exactly if the game itself rewrites it during a Test load).
+
+Offshoots and other people's versions
+-------------------------------------
+
+If someone makes a changed version or an offshoot of this editor, **read its code before you run it.** A program that edits files can do harm in the wrong
+hands, and a download from anywhere other than this page is not mine. **I am not responsible for anything I did not make**, including other people's
+versions, copies or edits of my work.
+
+
 What it does
 ------------
 

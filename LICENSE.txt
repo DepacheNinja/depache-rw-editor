@@ -4,4 +4,7 @@ Copyright (c) 2026 Depache. All rights reserved.
 The program may be downloaded and used free of charge, for personal use with Rusted Warfare mods.
 Redistribution, modification or use of the source code in other projects needs the author's written permission.
 
+The source code is published so that anyone can read it and verify what the program does; reading it and building it yourself for that purpose is welcome.
+The author is not responsible for versions, copies, offshoots or edits made by anyone else.
+
 The program contains none of the files of Depache's Mod Tribute or of the four mods it brings together; those belong to their authors.
