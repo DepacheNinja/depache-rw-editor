@@ -114,12 +114,26 @@ static class SelfTest
         form.Browser.SetSearch("zzzz-no-such-unit");
         if (form.Browser.ViewCount == 0) Ok("search for a missing name shows nothing (with a message)"); else Fail("nonsense search found units");
         form.Browser.SetSearch("");
-        foreach (var tag in new[] { "area:fe", "area:moo", "area:vte", "area:depache", "area:main", "groups", "menu", "logs", "settings", "area:" })
+        // every mod area of knowledge/mod-areas.json (mod 1.1.0 added ek and eksm), then the other pages
+        foreach (var tag in RwEditor.Core.Model.ModAreas.Embedded.Areas.Select(a => "area:" + a.Id).Concat(new[] { "groups", "menu", "logs", "settings", "area:" }))
         {
             form.SelectNav(tag);
             Application.DoEvents();
         }
-        Ok($"every section opened; back on all units ({form.Browser.ViewCount} rows)");
+        Ok($"every section opened; back on all units ({form.Browser.ViewCount} rows); units per area: " +
+           string.Join(", ", s.Model.Areas.Areas.Select(a => $"{a.Id} {s.Rows.Count(r => r.Area == a.Id)}")));
+
+        // mod 1.1.0: an EK unit with a two-currency price shows both parts editable (only when the folder holds the EK units)
+        if (s.Rows.SingleOrDefault(r => r.Name == "Ek_Brutus") is { } brutus)
+        {
+            var bd = StatView.Describe(s.Model, s.Dict, brutus);
+            var cr = bd.Simple.SingleOrDefault(r => r.Entry.Id == "core.price.credits");
+            var xr = bd.Expand.SingleOrDefault(r => r.Entry.Id == "core.price.experimental");
+            if (brutus.Area == "ek" && cr is { Editable: true } && xr is { Editable: true } && cr.Ref?.Number > 0 && xr.Ref?.Number > 0)
+                Ok($"EK unit Ek_Brutus ({brutus.AreaLabel}): price {cr.Ref!.Number} credits and {xr.Ref!.Number} experimental, both editable");
+            else Fail($"EK unit Ek_Brutus: area {brutus.AreaLabel}, credits row {cr?.ValueText ?? "-"} ({cr?.Note}), experimental row {xr?.ValueText ?? "-"} ({xr?.Note})");
+        }
+        else Note("no EK units in this folder (mod before 1.1.0): EK checks skipped");
 
         // open / close one family through the same path a click on the arrow takes
         int before = form.Browser.ViewCount;

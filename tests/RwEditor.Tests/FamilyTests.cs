@@ -370,12 +370,12 @@ public sealed class FamilyTests
     {
         var (m, f) = Real();
         var s = f.Stats;
-        Assert.Equal(1699, s.Entries);
-        Assert.Equal(1699, s.Roots + s.InsideFamilies + s.SharedParts + s.HelperParts);
+        Assert.Equal(2279, s.Entries);
+        Assert.Equal(2279, s.Roots + s.InsideFamilies + s.SharedParts + s.HelperParts);
         var seen = f.Items.SelectMany(i => (i.Root != null ? new[] { i.Root } : Array.Empty<UnitType>()).Concat(i.Members.Select(e => e.Unit))).ToList();
-        Assert.Equal(1699, seen.Distinct().Count());
+        Assert.Equal(2279, seen.Distinct().Count());
         Assert.Equal(0, s.UnresolvedLinkValues);
-        Assert.InRange(s.Roots, 300, 450);      // the owner's 1,699 'units' become a few hundred top-level units (exact number in the printed summary)
+        Assert.InRange(s.Roots, 600, 850);      // the 2,279 'units' (1,699 + 580 EK in mod 1.1.0) become a few hundred top-level units (exact number in the printed summary; 726 on 2026-11-03, 300-450 before EK)
         Console.WriteLine($"real src: {s.Roots} top-level units, {s.InsideFamilies} entries inside them (variants {s.Variants}, parts {s.Parts}), " +
             $"{s.SharedParts} shared parts, {s.HelperParts} helper parts; complete {s.Complete} (buildable {s.Buildable}, starting {s.StartingUnits}, " +
             $"map-editor named {s.MapEditorNamed}, named with sprite {s.NamedWithSprite})");

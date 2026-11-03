@@ -44,7 +44,7 @@ static class Cli
                 Rewrite a settings file in canonical form with baseMod stamped from the mod (one write).
 
         Stats and units (E1b-2):
-          rwedit units           --mod <folder> [--mod-group main|fe|moo|vte|depache] [--find text]
+          rwedit units           --mod <folder> [--mod-group main|fe|moo|vte|ek|eksm|depache] [--find text]
                 Read-only: every loadable unit (file with [core] name, no dont_load: true) with its mod area.
           rwedit stats           --mod <folder> --unit <name> [--all]
                 Read-only: the unit's whitelisted stats, resolved through copyFrom / @copyFromSection,
@@ -63,9 +63,9 @@ static class Cli
                 Unit thumbnails (frame 0 of [graphics] image, else the minimap icon, else a silhouette),
                 built in RAM and written once as <out>\thumbs.zip; also cached under
                 %LOCALAPPDATA%\DepacheRwEditor\thumbs\<copyId>.zip.
-          rwedit dict-check      [--dict <stat-dictionary.json>] [--mod <folder>]
+          rwedit dict-check      [--dict <stat-dictionary.json>] [--mod <folder>] [--all]
                 Validate the stat dictionary; with --mod also report the shipped range of every entry and any
-                shipped value outside a hard limit.
+                shipped value outside a hard limit (--all: every one of them, also the documented exceptions).
 
         Copies (E2):
           rwedit make-copy       --from <installed mod folder> --to <new or empty folder> [--name <copy name>]

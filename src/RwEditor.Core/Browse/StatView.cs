@@ -39,6 +39,9 @@ public static class StatView
                 var r = StatReader.Read(m, e, sec);
                 // "not set" is shown only for the basics of a fixed section (e.g. Armour); per-turret / per-projectile "not set" rows would be noise
                 if (!r.IsSet && (e.Tier == StatTier.Expand || e.FixedSection == null)) continue;
+                // an Expand resource part (e.g. the 'experimental' part, mod 1.1.0) is shown only where the price / income line has that part; otherwise every
+                // unit with a price would list "0 experimental" and "0 rust" rows
+                if (e.Tier == StatTier.Expand && e.Field != null && r.Editable && StatValue.PriceField(r.Raw!.Value, e.Field) == null) continue;
                 var target = e.Tier == StatTier.Simple ? simple : expand;
                 target.Add(Row(model, dict, u, row, e, sec, r));
             }

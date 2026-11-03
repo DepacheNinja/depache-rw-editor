@@ -66,6 +66,7 @@ static class StatCli
                 {
                     var r = StatReader.Read(m, e, sec);
                     if (!r.IsSet && e.Tier == StatTier.Expand) continue;
+                    if (e.Tier == StatTier.Expand && e.Field != null && r.Editable && StatValue.PriceField(r.Raw!.Value, e.Field) == null) continue;   // as the app (StatView)
                     shown.Add((sec.ToLowerInvariant(), e.Key.ToLowerInvariant()));
                     string val = !r.IsSet ? "(not set: game default)" : r.Editable ? $"{r.Text}{Unit(e, r.Number)}" : r.Raw!.Value;
                     string origin = r.Raw == null ? "" : $"  <- {r.Raw.Origin}{Shared(model, u, r)}";
@@ -208,7 +209,8 @@ static class StatCli
     // ------------------------------------------------------------------------------------------------------------------ dict-check
     public static int DictCheck(Opts o)
     {
-        o.Only("dict", "mod");
+        o.Only("dict", "mod", "all");
+        bool all = o.Flag("all");   // every value outside a hard limit, also the documented ones (default: the first 5 of each undocumented entry)
         var dict = o.Get("dict") is string p ? StatDictionary.Load(p) : StatDictionary.Embedded;   // throws DICTIONARY_INVALID with every problem
         Console.WriteLine($"dictionary: {dict.Entries.Count} entries ({dict.Entries.Count(e => e.Tier == StatTier.Simple)} simple, {dict.Entries.Count(e => e.Tier == StatTier.Expand)} expand), " +
             $"{dict.Rules.Count} cross-key rules, {dict.NeverEditable.Count} never-editable key patterns; verified entries {dict.Entries.Count(e => e.Verified)}; PASS");
@@ -224,9 +226,10 @@ static class StatCli
             {
                 Console.WriteLine($"    accepted ({r.OutsideHard.Count}): {r.Entry.ShippedOutsideHard}");
                 accepted += r.OutsideHard.Count;
+                if (all) foreach (var x in r.OutsideHard) Console.WriteLine("      accepted: " + x);
                 continue;
             }
-            foreach (var x in r.OutsideHard.Take(5)) Console.WriteLine("    OUTSIDE HARD LIMIT: " + x);
+            foreach (var x in all ? r.OutsideHard : r.OutsideHard.Take(5)) Console.WriteLine("    OUTSIDE HARD LIMIT: " + x);
             bad += r.OutsideHard.Count;
         }
         Console.WriteLine(bad == 0

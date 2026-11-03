@@ -1,12 +1,14 @@
 {
   "schema": 1,
-  "about": "Which source mod each unit file belongs to, for the editor's per-mod areas (DESIGN_SPEC 6, DESIGN_EDITOR 5.3). First matching glob wins; a file that matches none is 'main' (the main mod, Major Experimentals). Globs: '**' = any characters, '*' = any characters except '/', case-insensitive, paths relative to the mod root with '/'. Derived 2026-10-12 from the folder layout (src/donors/<fe|moo|vte>, CHANGELOG C-009..C-019) and tools/diff-vs-baseline.ps1 (ini files ADDED outside donors/ = Depache's own additions). Depache-made units inside donors/ (e.g. t3arty..t5arty, CHANGELOG C-018) stay in the donor area they extend.",
+  "about": "Which source mod each unit file belongs to, for the editor's per-mod areas (DESIGN_SPEC 6, DESIGN_EDITOR 5.3). First matching glob wins; a file that matches none is 'main' (the main mod, Major Experimentals). Globs: '**' = any characters, '*' = any characters except '/', case-insensitive, paths relative to the mod root with '/'. Derived 2026-10-12 from the folder layout (src/donors/<fe|moo|vte>, CHANGELOG C-009..C-019) and tools/diff-vs-baseline.ps1 (ini files ADDED outside donors/ = Depache's own additions). Depache-made units inside donors/ (e.g. t3arty..t5arty, CHANGELOG C-018) stay in the donor area they extend. 2026-11-03 (mod 1.1.0, CHANGELOG C-043..C-043h, maps/EK_MERGE_INVESTIGATION.md): two areas for the EK merge, one per source mod like the others: 'ek' = EK Definitive Edition by ice-v5 (EK2: the ported units in donors/ek/units, including the Depache-made economy overrides EkResourceDrill / EkResourceRefinery / EkSmallSpaceElevator that extend it, and the generated menu include files in donors/ek/menus, which hold no unit of their own), 'eksm' = EK - Sylvian Mettle by Videogames (EK1: the 10 kept legacy units donors/ek/legacy/lgc_*.ini, C-043e). Legacy is its own area because it comes from a different mod by a different author; mixing it into 'ek' would credit it to the wrong mod.",
   "defaultArea": "main",
   "areas": [
     { "id": "main", "label": "Major Experimentals", "globs": [] },
     { "id": "fe", "label": "Fabricator Extreme", "globs": ["donors/fe/**"] },
     { "id": "moo", "label": "Moo's Defence Agency", "globs": ["donors/moo/**"] },
     { "id": "vte", "label": "Vanilla Turrets Expansion", "globs": ["donors/vte/**"] },
+    { "id": "ek", "label": "EK Definitive Edition", "globs": ["donors/ek/units/**", "donors/ek/menus/**"] },
+    { "id": "eksm", "label": "EK - Sylvian Mettle", "globs": ["donors/ek/legacy/**"] },
     { "id": "depache", "label": "Depache additions", "globs": ["ACV/acvMainBldg.ini", "myAssets/extraStartAnchor.ini", "editorGenerated/**"] }
   ]
 }

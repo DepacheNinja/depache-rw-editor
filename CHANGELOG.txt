@@ -1,6 +1,22 @@
 Depache RW Editor - changes
 ===========================
 
+1.1.0 (2026-11-03) - ready for Depache's Mod Tribute 1.1.0 (EK built in)
+  Units
+    - Two new mod areas: EK Definitive Edition (570 units, with the EK menu entries) and EK - Sylvian Mettle (10 legacy units). 2,279 units in
+      all with mod 1.1.0; older mod versions open as before.
+    - The new resource Experimental: unit price, income and action price / gift, each its own value in Expand. Prices in two currencies
+      (price:170000,experimental=9000) change part by part; the other part is kept exactly, and Undo gives the file back byte for byte.
+    - EK factory entries whose price is also written as fixed numbers in their queue condition and refund are shown read-only with the reason
+      (changing one of the three lines alone would break the re-queue); plain prices stay editable.
+    - Price and income parts in Expand are listed only where the line has that part (no rows of "0 experimental" on every unit).
+    - Stat dictionary: shipped EK values outside the editor's ranges (for example 2147483647 on some EK projectiles and stations) are
+      documented and kept as they are; an edit must stay inside the range.
+  Checks
+    - Lint: a name the mod replaces (overrideAndReplace) and convertTo:NONE count as known units, as in the mod's own lint.
+    - Command line: rwedit dict-check --all lists every value outside a range; rwedit units --mod-group knows ek and eksm.
+    - Self-test opens every mod area and checks a two-currency EK unit; 586 automated tests.
+
 1.0.0 (2026-10-12) - first release
   Units
     - Browser for the units of the four mods, grouped into families (a unit with its upgrade levels, versions and parts), per-mod areas,

@@ -54,7 +54,7 @@ sealed class WelcomeView : UserControl
         Padding = new Padding(12);
         Ui.Stack(this,
             Ui.Heading("Welcome"),
-            Ui.Para("This editor lets you look at (and later change) every unit of Depache's Mod Tribute and the four mods inside it."),
+            Ui.Para("This editor lets you look at (and later change) every unit of Depache's Mod Tribute and the mods inside it (four up to mod version 1.0.7, six from 1.1.0)."),
             Ui.Para("It never changes the mod you got from the Steam Workshop. Instead it makes your own copy, and only that copy is ever changed. " +
                     "Click \"Make my copy\" to start. It takes about a minute and tells you every step."),
             Ui.Row(Ui.Btn("Make my copy...", makeCopy, what: "making a copy"), Ui.Btn("Just look at a mod folder...", openFolder, what: "opening a folder")));

@@ -56,11 +56,20 @@
       "evidence": "units/custom/d/b.b (javap offsets 402-455): a part named after a mod resource (rust is defined in all-units.template) is Float.parseFloat. Upper bound is an editor bound."
     },
     {
+      "id": "core.price.experimental", "key": "price", "field": "experimental", "sections": ["core"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Price (experimental)", "desc": "Experimental (the orange EK resource, mod 1.1.0) paid to build the unit, on top of the credits.",
+      "up": "Needs more experimental.", "down": "Needs less experimental. 0 = no experimental.",
+      "unit": "experimental", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "experimental is a mod resource defined in all-units.template [global_resource_experimental] (DEPACHE-EDIT C-043, mod 1.1.0), the same way as rust ([global_resource_rust]); units/custom/d/b.b reads a part named after a mod resource with Float.parseFloat (javap offsets 402-455, see core.price.rust). Not re-traced in the jar for this resource name and not tested in a match. Shipped: the two-currency prices of the EK Definitive Edition units, e.g. airship_brutus.ini [core] price:170000,experimental=9000. Upper bound is an editor bound."
+    },
+    {
       "id": "core.maxHp", "key": "maxHp", "field": null, "sections": ["core"], "type": "int", "tier": "simple", "appliesTo": "both",
       "label": "Health", "desc": "Hit points: damage the unit can take before it is destroyed.",
       "up": "Survives longer (stronger for the same price).", "down": "Dies faster.",
       "unit": "hit points", "hardMin": 1, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship maxHp 0 on 85 units (e.g. Ek_announcement 0.ini, EkTCAIDbombdown a10_down.ini, the modular slots common_slot.ini, EkMirvSpawner) and 2147483647 (the largest Java int) on 1. The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag offset 6345 (javap): ab.g = required Integer.parseInt; no range check in the loader. hardMin 1 (0 or less = dies at once, DESIGN_EDITOR 1.4) and hardMax are editor bounds (PH-076)."
     },
     {
@@ -69,6 +78,7 @@
       "up": "Absorbs more damage.", "down": "Absorbs less. 0 = no shield.",
       "unit": "shield points", "hardMin": 0, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship maxShield 2147483647 (the largest Java int) on 1 unit (executor_base.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag offset 6363: ab.b(Integer), default 0, no range check. Bounds are editor bounds (PH-076)."
     },
     {
@@ -77,6 +87,7 @@
       "up": "Small hits do little or no damage.", "down": "Takes the full damage of each hit.",
       "unit": "damage per hit", "hardMin": 0, "hardMax": 1000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship armour 2147483647 (the largest Java int) on 2 units (crazy_command.ini, executor_base.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag (keyreads ag line 6110): ab.a(Float), no range check. Bounds are editor bounds (PH-076)."
     },
     {
@@ -85,6 +96,7 @@
       "up": "Heals faster between fights.", "down": "Heals slower. 0 = no self repair.",
       "unit": "health per frame", "hardMin": -100000, "hardMax": 100000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship selfRegenRate 2147483647 (the largest Java int) on 1 unit (executor_base.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag offset 8087: ab.a(Float), default 0, no range check. Negative values drain health (shipped: dying-unit templates -150 .. -5). Unit (per frame) not traced; bounds are editor bounds (PH-076)."
     },
     {
@@ -93,6 +105,7 @@
       "up": "Takes longer to build.", "down": "Builds faster.",
       "unit": "seconds", "hardMin": 0.1, "hardMax": 36000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": true,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship 16 build times outside the range: 114514s (0.ini, Ek_announcement), 0.01s on 11 (e.g. B1E-B.ini, B1E-F.ini, B1E-S.ini and their -UP forms, drone units) and 0s on 4. The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag line 5137: ab.d (inverted time, gameFramework/utility/ab offsets 2328-2403): 'Ns' -> 1/(N*60) progress per frame, a plain number = progress per frame. 0s would divide by zero; hardMin 0.1 s and hardMax 10 h are editor bounds."
     },
     {
@@ -112,6 +125,14 @@
       "evidence": "Same line as core.generation_resources.credits: a part named after a mod resource (rust is defined in all-units.template) is Float.parseFloat (d/b.b offsets 402-455, as for price). Shipped examples: command_center.ini 'credits=60, rust=15', ACV core 'rust=${rustProvided1}' (expression: read-only). The rate wording and bounds are as for the credits part (the survey's largest shipped value is 100000)."
     },
     {
+      "id": "core.generation_resources.experimental", "key": "generation_resources", "field": "experimental", "sections": ["core"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Experimental produced", "desc": "Experimental (the orange EK resource, mod 1.1.0) this unit or building produces by itself (T4 Experimental Driller 2, T5 Experimental Refinery 5, Space Elevator 10).",
+      "up": "More experimental: more EK experimental units.", "down": "Less experimental. 0 = none.",
+      "unit": "experimental per second", "hardMin": -1000000, "hardMax": 1000000, "warnMin": null, "warnMax": 5000, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "experimental is a mod resource defined in all-units.template [global_resource_experimental] (DEPACHE-EDIT C-043, mod 1.1.0), the same way as rust ([global_resource_rust]); units/custom/d/b.b reads a part named after a mod resource with Float.parseFloat (javap offsets 402-455, see core.price.rust). Not re-traced in the jar for this resource name and not tested in a match. Shipped (9 lines): resource_drilling.ini credits=150, rust=30, experimental=2; resource_refinery.ini ... experimental=5; space_elevator.ini credits=400, rust=80, experimental=10; laboratory.ini experimental=5 .. bug_laboratory.ini experimental=15. The HUD figure equals the configured value (C-043g in-game drive, supports 'per second', PH-008). Bounds as for the rust part."
+    },
+    {
       "id": "core.borrowResourcesWhileBuilt.techLevel", "key": "borrowResourcesWhileBuilt", "field": "techLevel", "sections": ["core"], "type": "partFloat", "tier": "simple", "appliesTo": "both",
       "label": "Tech level provided", "desc": "How much tech level this building (or unit) adds to its owner while it stands. Tech levels ADD UP across everything the player owns; things unlock when the sum reaches their requirement (2, 4, 8 ... 70 in this mod). Tech Center T1/T2/T3 provide 1/4/15.",
       "up": "Unlocks higher-tier buildings and upgrades sooner (one building can carry the whole tech tree).", "down": "Unlocks later. 0 = provides none.",
@@ -125,6 +146,7 @@
       "up": "Moves faster.", "down": "Moves slower. 0 = cannot move.",
       "unit": "pixels per frame", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": 100, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship negative moveSpeed on 2 units: -16 (executor_maincannon.ini) and -2.8 (system.ini, Ek_beamgunshiplaser). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag line 7808: ab.a(Float), no range check. Bounds are editor bounds (PH-076)."
     },
     {
@@ -133,6 +155,7 @@
       "up": "Attacks from further away.", "down": "Must get closer to attack.",
       "unit": "pixels", "hardMin": -1000, "hardMax": 1000000, "warnMin": 0, "warnMax": 20000, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": ["limitingRangeVsMaxAttackRange"], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship maxAttackRange 2147483647 (the largest Java int) on 3 units (nuke_launcher_super.ini, space_elevator.ini, Valkyrie.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag offsets 11539-11572: ab.a(Float), multiplied by globalScale; no range check. Negative values are shipped on fake bodies that never attack (orbitalGunFakeBody -40, offSatFakeBody -50). Bounds are editor bounds (PH-076)."
     },
     {
@@ -149,6 +172,7 @@
       "up": "Blasts hurt more.", "down": "Blasts hurt less.",
       "unit": "damage", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": ["projectileNeedsDamage"], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship areaDamage 2147483647 (the largest Java int) on 2 projectiles (executor_nuke.ini, nuketruck_debug.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/bh offsets 26 and 93: ab.b(Integer). Bounds are editor bounds (PH-076)."
     },
     {
@@ -156,7 +180,7 @@
       "label": "Reload time", "desc": "Time between two shots of this turret (frames, or 'Ns' for seconds).",
       "up": "Fires less often.", "down": "Fires more often.",
       "unit": "frames", "hardMin": 1, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
-      "rules": [], "verified": false, "shippedOutsideHard": "hades (experimental_groundeffect_vehicles/groundeffect_bomber/groundeffect_bomber.ini [turret_1], copied to turret_2..5) ships delay 0; DESIGN_EDITOR 1.4 refuses 0 (fires every frame) on purpose: the shipped value stays, an edit must pick 1 frame or more.",
+      "rules": [], "verified": false, "shippedOutsideHard": "Shipped delay 0 on 24 turrets (survey rwedit dict-check --mod src --all 2026-11-03): hades (experimental_groundeffect_vehicles/groundeffect_bomber/groundeffect_bomber.ini [turret_1], copied to turret_2..12), thor / thorFlying (experimental_hover_lightening/thor.ini [turret_base]), ac_lightning (experimental_megatank/ac_lightning.ini [turret_muzzle1]), torpedoBoat (torpedo_boat/torpedo_boat.ini [turret_1]) and 8 EK Definitive Edition turrets (donors/ek/units: chimera, Cordelia_drone, executor_base, tigermoth, vindicator, warden_sniper_x x2, warmaster; mod 1.1.0); DESIGN_EDITOR 1.4 refuses 0 (fires every frame) on purpose: the shipped value stays, an edit must pick 1 frame or more.",
       "evidence": "units/custom/bn line 729: ab.b(Float) = time ('Ns' or frames). hardMin 1 frame (0 = fires every frame, DESIGN_EDITOR 1.4) and hardMax 1 hour are editor bounds (PH-076)."
     },
     {
@@ -165,6 +189,7 @@
       "up": "Shield comes back faster.", "down": "Shield comes back slower.",
       "unit": "shield per frame", "hardMin": -1000000, "hardMax": 1000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship shieldRegen 2147483647 (the largest Java int) on 1 unit (executor_base.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag line 6082: ab.a(Float), default 0.25. Negative values drain the shield (shipped: -425 .. -6). Bounds are editor bounds (PH-076)."
     },
     {
@@ -173,6 +198,7 @@
       "up": "More stored energy for abilities.", "down": "Less stored energy.",
       "unit": "energy", "hardMin": 0, "hardMax": 100000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": ["energyUsageNeedsEnergyMax"], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship energyMax 300000000 / 500000000 / 1200000000 on 5 units (airship_GLADIATOR_shield_defense.ini and its _Disabled form, leviathan.ini and its _Disabled form, Valkyrie.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag line 6129: ab.a(Float). Bounds are editor bounds (PH-076)."
     },
     {
@@ -213,6 +239,7 @@
       "up": "Harder to push around.", "down": "Easier to push around.",
       "unit": "mass", "hardMin": 1, "hardMax": 2000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship mass 0 on 27 units (e.g. balloon_dummy.ini, EK_worm_missile.ini, EK_worm_torpedo.ini, the executor_* parts) and 2147483647 (the largest Java int) on 3. The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag offset 5041: ab.g = required Integer.parseInt (shipped up to 1000000000 = practically immovable). hardMax stays below the Java int range. Bounds are editor bounds (PH-076)."
     },
     {
@@ -269,6 +296,7 @@
       "up": "Attacks less often.", "down": "Attacks more often.",
       "unit": "frames", "hardMin": 1, "hardMax": 216000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship shootDelay 0 on 24 units (e.g. airship_brutus.ini, airship_caesarius.ini, airship_kestrel.ini, shield_defense.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/ag line 8238: ab.b(Float) time, default 50 frames. Bounds are editor bounds (PH-076)."
     },
     {
@@ -341,6 +369,7 @@
       "up": "Hits more units per shot (and costs more CPU).", "down": "Hits fewer units.",
       "unit": "pixels", "hardMin": 0, "hardMax": 2000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship areaRadius 2147483647 (the largest Java int) on 1 projectile (nuketruck_debug.ini [projectile_kill]). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/bh line 70: ab.b(Integer). hardMax is an editor bound against CPU load (DESIGN_EDITOR 1.4; PH-076)."
     },
     {
@@ -349,6 +378,7 @@
       "up": "Reaches the target sooner; harder to dodge.", "down": "Slower shots; moving targets can dodge.",
       "unit": "pixels per frame", "hardMin": 0, "hardMax": 1000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship projectile speed 99999 on 3 projectiles (airship_GLADIATOR_shield_defense.ini and its _Disabled form, shield_defense.ini) and 1145141919 on 1 (ember.ini [projectile_targetdummy]). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/bh line 246: ab.a(Float). Bounds are editor bounds (PH-076)."
     },
     {
@@ -357,6 +387,7 @@
       "up": "Flies further before vanishing (very long lives with slow shots can pile up).", "down": "Vanishes sooner (may fall short).",
       "unit": "frames", "hardMin": 0, "hardMax": 216000, "warnMin": null, "warnMax": 3600, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship projectile life 99999999 on 9 projectiles and 2147483647 (the largest Java int) on 1 (executor_base.ini, nuke_launcher_super.ini, Valkyrie.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/bh offset 460: ab.h = required time; 0 is shipped on fake / notify projectiles that vanish at once. warnMax 1 minute and hardMax 1 hour are an editor bound (runaway projectiles, crashes.txt OutOfMemoryError 2025-09-25; DESIGN_EDITOR 1.4; PH-076)."
     },
     {
@@ -373,6 +404,7 @@
       "up": "Pierces more armour.", "down": "Pierces less armour.",
       "unit": "armour points", "hardMin": -1000000, "hardMax": 1000000, "warnMin": 0, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": false,
+      "shippedOutsideHard": "EK Definitive Edition units (donors/ek/units, mod 1.1.0, survey rwedit dict-check --mod src --all 2026-11-03) ship armourIgnoreAmount 2147483647 (the largest Java int) on 1 projectile (executor_nuke.ini). The game loads them (mod 1.1.0, CHANGELOG C-043h: smoke-test exit 0). The shipped value stays as it is; an edit must stay inside the range.",
       "evidence": "units/custom/bh line 1203: ab.a(Float). Bounds are editor bounds (PH-076)."
     },
     {
@@ -408,6 +440,14 @@
       "evidence": "Same parser as action.price.credits; rust is a mod resource (Float.parseFloat). Bounds are editor bounds."
     },
     {
+      "id": "action.price.experimental", "key": "price", "field": "experimental", "sections": ["action_*"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Action price (experimental)", "desc": "Experimental an action costs (EK build entries, mod 1.1.0).",
+      "up": "The action needs more experimental.", "down": "The action needs less experimental.",
+      "unit": "experimental", "hardMin": 0, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "Same parser as action.price.credits. experimental is a mod resource defined in all-units.template [global_resource_experimental] (DEPACHE-EDIT C-043, mod 1.1.0), the same way as rust ([global_resource_rust]); units/custom/d/b.b reads a part named after a mod resource with Float.parseFloat (javap offsets 402-455, see core.price.rust). Not re-traced in the jar for this resource name and not tested in a match. Shipped: the EK factory entries in donors/ek/menus (e.g. ekT1landExp.ini [action_EkMarshall] price: credits=16500,experimental=1000). Those entries repeat the price in their queue condition and refund helper, so the editor shows them read-only (StatReader, coupled price). Bounds are editor bounds."
+    },
+    {
       "id": "action.buildSpeed", "key": "buildSpeed", "field": null, "sections": ["action_*"], "type": "buildTime", "tier": "expand", "appliesTo": "both",
       "label": "Action time", "desc": "How long an action (for example an upgrade) takes. 'Ns' = N seconds.",
       "up": "The action takes longer.", "down": "The action finishes sooner.",
@@ -430,6 +470,14 @@
       "unit": "rust", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
       "rules": [], "verified": true,
       "evidence": "Same parser as action.addResources.credits. Bounds are editor bounds."
+    },
+    {
+      "id": "action.addResources.experimental", "key": "addResources", "field": "experimental", "sections": ["action_*", "hiddenAction_*"], "type": "partFloat", "tier": "expand", "appliesTo": "both",
+      "label": "Gives experimental", "desc": "Experimental an action adds (negative = takes).",
+      "up": "The action gives more experimental.", "down": "The action gives less experimental.",
+      "unit": "experimental", "hardMin": -1000000000, "hardMax": 1000000000, "warnMin": null, "warnMax": null, "relWarnMin": 0.1, "relWarnMax": 10,
+      "rules": [], "verified": false,
+      "evidence": "Same parser as action.addResources.credits. experimental is a mod resource defined in all-units.template [global_resource_experimental] (DEPACHE-EDIT C-043, mod 1.1.0), the same way as rust ([global_resource_rust]); units/custom/d/b.b reads a part named after a mod resource with Float.parseFloat (javap offsets 402-455, see core.price.rust). Not re-traced in the jar for this resource name and not tested in a match. Shipped: the refund helpers of the EK factory entries (e.g. ekT1landExp.ini [action_EkMarshall2] addResources: credits=-16500,experimental=-1000), read-only in the editor because they must equal minus the entry's price. Bounds are editor bounds."
     }
   ]
 }

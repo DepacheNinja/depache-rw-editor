@@ -29,7 +29,12 @@ public static class RwLint
             foreach (var s in ini.Sections) sectionNames.Add(s.Name);
             var n = ini.Get("core", "name");
             if (n != null) foreach (var part in n.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) unitNames.Add(part);
+            // same as tools/RwCatalog/Lint.cs (DEPACHE-EDIT C-043, mod 1.1.0): a name this mod REPLACES (overrideAndReplace) is a valid reference target
+            // too (the engine resolves it to the replacing unit, INTEGRATION_GUIDE 5.3), e.g. EK's convertTo:commandcenter
+            var ov = ini.Get("core", "overrideAndReplace");
+            if (ov != null) foreach (var part in ov.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) unitNames.Add(part);
         }
+        unitNames.Add("NONE");   // 'convertTo:NONE' is the engine's "no conversion" sentinel (EK Definitive Edition uses it and loads cleanly; RwCatalog C-043)
 
         foreach (var (rel, ini) in parsed)
             foreach (var s in ini.Sections)

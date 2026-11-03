@@ -15,7 +15,16 @@ public class DictionaryTests
     public void Embedded_dictionary_loads_with_the_designed_shape()
     {
         Assert.Equal(15, D.Entries.Count(e => e.Tier == StatTier.Simple));
-        Assert.InRange(D.Entries.Count, 40, 50);
+        Assert.InRange(D.Entries.Count, 40, 60);
+        // mod 1.1.0: the EK resource 'experimental' has the same four part entries as rust, all in Expand
+        foreach (var id in new[] { "core.price.experimental", "core.generation_resources.experimental", "action.price.experimental", "action.addResources.experimental" })
+        {
+            var e = D.ById(id);
+            Assert.NotNull(e);
+            Assert.Equal(StatType.PartFloat, e!.Type);
+            Assert.Equal("experimental", e.Field);
+            Assert.Equal(StatTier.Expand, e.Tier);
+        }
         Assert.Empty(D.Check());
         // the design's 12 Simple stats (DESIGN_EDITOR 1.3) plus credits / rust produced and tech level provided (C-033)
         Assert.Equal(new[] { "attack.maxAttackRange", "core.armour", "core.borrowResourcesWhileBuilt.techLevel", "core.buildSpeed", "core.generation_resources.credits", "core.generation_resources.rust", "core.maxHp", "core.maxShield", "core.price.credits", "core.price.rust",
@@ -112,5 +121,5 @@ public class DictionaryTests
     }
 
     [Fact]
-    public void Embedded_mod_areas_load() => Assert.Equal(new[] { "main", "fe", "moo", "vte", "depache" }, ModAreas.Embedded.Areas.Select(a => a.Id));
+    public void Embedded_mod_areas_load() => Assert.Equal(new[] { "main", "fe", "moo", "vte", "ek", "eksm", "depache" }, ModAreas.Embedded.Areas.Select(a => a.Id));
 }

@@ -7,4 +7,4 @@ Redistribution, modification or use of the source code in other projects needs t
 The source code is published so that anyone can read it and verify what the program does; reading it and building it yourself for that purpose is welcome.
 The author is not responsible for versions, copies, offshoots or edits made by anyone else.
 
-The program contains none of the files of Depache's Mod Tribute or of the four mods it brings together; those belong to their authors.
+The program contains none of the files of Depache's Mod Tribute or of the mods it brings together; those belong to their authors.

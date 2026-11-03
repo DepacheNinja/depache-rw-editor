@@ -42,12 +42,14 @@ public class StatRepoTests
     [RepoFact]
     public void Loadable_unit_count_and_areas_match_the_design_survey()
     {
-        Assert.Equal(1699, Model.Units.Count);                                     // DESIGN_EDITOR 1.1: 1,699
+        Assert.Equal(2279, Model.Units.Count);                                     // DESIGN_EDITOR 1.1: 1,699 up to mod 1.0.7; + 580 EK units in mod 1.1.0
         Assert.Equal(1613, Model.Units.Count(u => u.Area == "main"));
         Assert.Equal(2, Model.Units.Count(u => u.Area == "depache"));               // main mod 1,615 = main + depache
         Assert.Equal(20, Model.Units.Count(u => u.Area == "fe"));
         Assert.Equal(21, Model.Units.Count(u => u.Area == "moo"));
         Assert.Equal(43, Model.Units.Count(u => u.Area == "vte"));
+        Assert.Equal(570, Model.Units.Count(u => u.Area == "ek"));                 // CHANGELOG C-043: 570 EK Definitive Edition units (incl. the C-043c economy overrides)
+        Assert.Equal(10, Model.Units.Count(u => u.Area == "eksm"));                // C-043e: the 10 kept EK - Sylvian Mettle legacy units
     }
 
     [RepoFact]

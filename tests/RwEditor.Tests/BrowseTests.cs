@@ -135,7 +135,7 @@ public sealed class BrowseTests
     {
         var model = UnitModel.Load(Repo.Src);
         var rows = UnitCatalog.Build(model);
-        Assert.Equal(1699, rows.Count);
+        Assert.Equal(2279, rows.Count);
         Assert.Equal(rows.Count, UnitCatalog.Query(rows, new UnitQuery()).Count);
         Assert.Contains(UnitCatalog.Query(rows, new UnitQuery("hover")), r => r.Name == "hoverBuilder");
         var d = StatView.Describe(model, StatDictionary.Embedded, rows.Single(r => r.Name == "heavyAATank"));
